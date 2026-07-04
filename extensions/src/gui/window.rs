@@ -1,6 +1,6 @@
 use crate::gui::GuiApiType;
 use clap_sys::ext::gui::*;
-use core::ffi::{CStr, c_ulong, c_void};
+use core::ffi::{c_ulong, c_void, CStr};
 use std::marker::PhantomData;
 
 /// A handle to a host-provided parent window.
@@ -216,15 +216,39 @@ const _: () = {
 #[allow(deprecated)]
 const _: () = {
     use raw_window_handle_06::{
-        AppKitWindowHandle, HandleError, HasRawWindowHandle, RawWindowHandle, Win32WindowHandle,
-        XlibWindowHandle,
+        AppKitWindowHandle, HandleError, HasRawWindowHandle, HasWindowHandle, RawWindowHandle,
+        Win32WindowHandle, WindowHandle, XlibWindowHandle,
     };
     use std::num::NonZeroIsize;
     use std::ptr::NonNull;
 
+    // // SAFETY: The host ensures the underlying window handles are still valid
+    // unsafe impl HasRawWindowHandle for Window<'_> {
+    //     fn raw_window_handle(&self) -> Result<RawWindowHandle, HandleError> {
+    //         let api_type = self.api_type();
+    //         let raw = if api_type == GuiApiType::WIN32 {
+    //             RawWindowHandle::Win32(Win32WindowHandle::new(
+    //                 // SAFETY: we just checked api_type matched
+    //                 NonZeroIsize::new((unsafe { self.raw.specific.win32 }) as isize).unwrap(),
+    //             ))
+    //         } else if api_type == GuiApiType::COCOA {
+    //             RawWindowHandle::AppKit(AppKitWindowHandle::new(
+    //                 // SAFETY: we just checked api_type matched
+    //                 NonNull::new(unsafe { self.raw.specific.cocoa }).unwrap(),
+    //             ))
+    //         } else if api_type == GuiApiType::X11 {
+    //             // SAFETY: we just checked api_type matched
+    //             RawWindowHandle::Xlib(XlibWindowHandle::new(unsafe { self.raw.specific.x11 }))
+    //         } else {
+    //             return Err(HandleError::NotSupported);
+    //         };
+    //         Ok(raw)
+    //     }
+    // }
+
     // SAFETY: The host ensures the underlying window handles are still valid
-    unsafe impl HasRawWindowHandle for Window<'_> {
-        fn raw_window_handle(&self) -> Result<RawWindowHandle, HandleError> {
+    impl HasWindowHandle for Window<'_> {
+        fn window_handle(&self) -> Result<WindowHandle<'_>, HandleError> {
             let api_type = self.api_type();
 
             let raw = if api_type == GuiApiType::WIN32 {
@@ -244,7 +268,8 @@ const _: () = {
                 return Err(HandleError::NotSupported);
             };
 
-            Ok(raw)
+            // SAFETY: TODO
+            Ok(unsafe { WindowHandle::borrow_raw(raw) })
         }
     }
 

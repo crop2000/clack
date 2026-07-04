@@ -2,7 +2,9 @@
 slint::include_modules!();
 
 use crate::{params::GainParamsShared, GainPluginMainThread, GainPluginShared};
-use baseview::{WindowHandle as BaseviewWindowHandle, WindowOpenOptions, WindowScalePolicy};
+use baseview::{
+    dpi::LogicalSize, WindowHandle as BaseviewWindowHandle, WindowOpenOptions, WindowScalePolicy,
+};
 use clack_extensions::gui::*;
 use clack_plugin::prelude::*;
 use slint_baseview::slint_window::SlintWindow;
@@ -32,15 +34,14 @@ pub struct GainPluginGui {
 impl GainPluginGui {
     /// Creates a new GUI window, and embeds it into the given `parent`.
     pub fn new(parent: Window<'_>, state: &GainPluginShared) -> Self {
-        let settings = WindowOpenOptions {
-            title: "Gain Plugin".to_string(),
-            size: baseview::Size {
+        let settings = WindowOpenOptions::new()
+            .with_title("Gain Plugin".to_string())
+            .with_size(LogicalSize {
                 width: 400.0,
                 height: 400.0,
-            },
-            scale: WindowScalePolicy::SystemScaleFactor,
-            gl_config: Some(Default::default()),
-        };
+            })
+            .with_gl_config(Some(Default::default()))
+            .with_scale_policy(WindowScalePolicy::SystemScaleFactor);
 
         let handle = SlintWindow::open_parented(
             &parent,

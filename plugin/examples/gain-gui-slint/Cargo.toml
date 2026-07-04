@@ -16,7 +16,7 @@ clack-extensions = { workspace = true, features = [
   "gui",
   "note-ports",
   "params",
-  "raw-window-handle_05",
+  "raw-window-handle_06",
   "state",
 ] }
 # baseview = { git = "https://github.com/RustAudio/baseview.git", tag = "v0.2", features = [
@@ -25,9 +25,13 @@ clack-extensions = { workspace = true, features = [
 #
 # this was done with the rwh06 branch!
 # baseview = { path = "../../../../baseview", features = ["opengl"] }
-baseview = { version = "0.1.4", features = ["opengl"] }
+# baseview = { version = "0.1.4", features = ["opengl"] }
+baseview = { git = "https://github.com/RustAudio/baseview.git", branch = "next", features = [
+  "opengl",
+] }
+
 # this was done with the rwh06 branch!
-slint-baseview = { git = "https://codeberg.org/crop/slint-baseview.git" }
+slint-baseview = { git = "https://codeberg.org/crop/slint-baseview.git", branch = "rhw06_2_2" }
 slint = { version = "=1.17.0", default-features = false, features = [
   "std",
   "renderer-femtovg",
