@@ -27,7 +27,7 @@ clack-extensions = { workspace = true, features = [
 # baseview = { path = "../../../../baseview", features = ["opengl"] }
 baseview = { version = "0.1.4", features = ["opengl"] }
 # this was done with the rwh06 branch!
-slint-baseview = { path = "../../../../slint-baseview" }
+slint-baseview = { git = "https://codeberg.org/crop/slint-baseview.git" }
 slint = { version = "=1.17.0", default-features = false, features = [
   "std",
   "renderer-femtovg",
